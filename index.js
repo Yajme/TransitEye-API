@@ -22,9 +22,11 @@ db.initDatabase();
 //Documentation must exist here:
 app.get('/',(req,res)=>{
 
-  res.send('Hello world');
 });
-
+app.get('/test',(req,res)=>{
+  const timestamp = new Date().toISOString();
+  res.json({message : "HTTP request success", status: 200, timestamp : timestamp});
+})
 app.use('/api',api);
 
 //catches non existent url
