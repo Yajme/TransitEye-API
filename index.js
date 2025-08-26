@@ -2,7 +2,7 @@ import express from 'express';
 import dotenv from 'dotenv';
 import cors from 'cors';
 import db from '#src/config/db';
-import api from '#src/routes/api';
+import api from '#src/routes/index';
 
 dotenv.config();
 
@@ -21,6 +21,14 @@ db.initDatabase();
 
 //Documentation must exist here:
 app.get('/',(req,res)=>{
+const existingEndpoint = 
+  ["/api/location","/api/bus"]
+;
+
+
+res.json({message : "Documentation Must exist here", Placeholder : "this is only a place holder", status : "API UP"
+, endpoints : existingEndpoint
+});
 
 });
 app.get('/test',(req,res)=>{
