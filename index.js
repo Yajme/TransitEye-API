@@ -102,7 +102,7 @@ app.get('/test/generate', async (req,res)=>{
 
 app.post('/test/device',(req,res,next)=>{
   console.log(req.body);
-  res.json({message : "OK"});
+  res.json({message : "OK",body : req.body});
 })
 //catches non existent url
 app.use((req, res, next) => {
