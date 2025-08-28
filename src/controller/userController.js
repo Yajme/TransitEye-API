@@ -1,7 +1,7 @@
 import { UserError } from "#src/module/userException";
 import db from '#src/config/db';
-
-
+import { sha256 } from "js-sha256";
+import User from "#src/model/user";
 const apiKeyValidation = async (req,res,next) =>{
     try {
         const apiKey = req.query.key;
@@ -37,7 +37,17 @@ const test = (req,res,next)=>{
 
 const AuthenticateUser = async (req,res,next)=>{
   try {
-    
+    const {username,password} = req.body;
+    const user = new User(username,password);
+    const credentials = await user.fetchCredentials(db.connection);
+   
+
+    const hashedPassword = sha256(password+credentials[0].salt);
+    if(hashedPassword !== credentials[0].password){
+      throw new UserError('Invalid password',401,{username : username});
+    }
+
+    res.json({message : "OK",credentials : credentials});
   } catch (error) {
     next(error);
   }
@@ -45,5 +55,6 @@ const AuthenticateUser = async (req,res,next)=>{
 
 export default { 
     apiKeyValidation,
-    test
+    test,
+    AuthenticateUser
 }

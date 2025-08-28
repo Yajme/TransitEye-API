@@ -1,5 +1,5 @@
 import express from 'express';
-import userController from '#src/controller/userController';
+import user from '#src/controller/userController';
 
 
 
@@ -10,8 +10,8 @@ import userController from '#src/controller/userController';
 const router = express.Router();
 
 
-router.get('/validate',userController.apiKeyValidation,userController.test);
-
+router.get('/validate',user.apiKeyValidation,user.test);
+router.post('/login',user.AuthenticateUser);
 
 
 

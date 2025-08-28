@@ -14,34 +14,74 @@ app.use(express.json());
 app.use(express.urlencoded({extended : true}));
 
 
-//Connect the database here
+//Connect the database(s) here
 //supabase
 db.initDatabase();
 
 
+// /api endpoint
+app.use('/api',api);
+
 //Documentation must exist here:
 app.get('/',(req,res)=>{
+   console.log("Host header:", req.get("host"));    // e.g. example.com:3000
+  console.log("Hostname only:", req.hostname);     // e.g. example.com
+  console.log("Protocol:", req.protocol);          // http or https
+  console.log("Full URL:", req.protocol + "://" + req.get("host") + req.originalUrl); 
 const existingEndpoint = 
-  ["/api/location","/api/bus"]
-;
+  [
+    "/api/location",
+    "/api/bus",
+    
+  ];
 
 
-res.json({message : "Documentation Must exist here", Placeholder : "this is only a place holder", status : "API UP"
-, endpoints : existingEndpoint
+res.json({
+  message : "Documentation Must exist here", 
+  Placeholder : "this is only a place holder", 
+  status : "API UP", 
+  endpoints : existingEndpoint
 });
 
 });
-app.get('/test',(req,res)=>{
+
+//testing purposes might be unavailable in production
+app.get('/test', async (req,res)=>{
+  //if this is accessed in production:
+  //we should check if request has api key
+  const api_key = req.query.key;
+   //check if api key exists in our database:
+  if(isProd){
+    if(!api_key) next();
+    const query = 'SELECT id FROM api_keys WHERE key = $1 AND deleted_at IS NULL';
+    const response = await db.connection.query(query,[api_key]);
+    if(response.rowCount < 1) {
+      res.json({message : "Invalid API key, please try again later", status : 401});
+    }
+  }
   const timestamp = new Date().toISOString();
-  res.json({message : "HTTP request success", status: 200, timestamp : timestamp});
+  res.json({
+    message : "HTTP request success", 
+    status: 200, 
+    timestamp : timestamp
+  });
 })
-app.use('/api',api);
+
 app.get('/test/generate', async (req,res)=>{
-  
+  function makeid(length) {
+    var result           = '';
+    var characters       = 'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789';
+    var charactersLength = characters.length;
+    for ( var i = 0; i < length; i++ ) {
+        result += characters.charAt(Math.floor(Math.random() * charactersLength));
+    }
+    return result;
+}
+
   //check here if on PRODUCTION
   const isProd = process.env.NODE_ENVIRONMENT;
   if(isProd === 'PRODUCTION'){
-    return res.json({message : "cannot process this end point, please try again later"});
+    next();
   }
   const apiKey = makeid(16);
   const salt = makeid(5);
@@ -53,7 +93,16 @@ app.get('/test/generate', async (req,res)=>{
   
 
   //const timestamp = new Date()
-  res.json({message : "api key successfully generated.", timestamp : new Date().toISOString(), key: apiKey});
+  res.json({
+    message : "api key successfully generated.", 
+    timestamp : new Date().toISOString(), 
+    key: apiKey
+  });
+})
+
+app.post('/test/device',(req,res,next)=>{
+  console.log(req.body);
+  res.json({message : "OK"});
 })
 //catches non existent url
 app.use((req, res, next) => {
@@ -75,7 +124,7 @@ app.use((err, req, res, next) => {
 
 
     })*/
-  console.log(isProd);
+  
     res.status(err.status || 500).json({
         message: err.message,
         data : !isProd ? err.data : undefined,
@@ -93,12 +142,3 @@ app.listen(PORT,()=>{
 });
 
 
-function makeid(length) {
-    var result           = '';
-    var characters       = 'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789';
-    var charactersLength = characters.length;
-    for ( var i = 0; i < length; i++ ) {
-        result += characters.charAt(Math.floor(Math.random() * charactersLength));
-    }
-    return result;
-}
