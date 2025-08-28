@@ -1,5 +1,9 @@
 import express from 'express';
 
+
+
+
+// /api/location
 const router = express.Router();
 router.get('/',(req,res,next)=>{
   res.json({message : "api endpoint for gps location"});

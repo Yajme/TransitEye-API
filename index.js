@@ -36,7 +36,25 @@ app.get('/test',(req,res)=>{
   res.json({message : "HTTP request success", status: 200, timestamp : timestamp});
 })
 app.use('/api',api);
+app.get('/test/generate', async (req,res)=>{
+  
+  //check here if on PRODUCTION
+  const isProd = process.env.NODE_ENVIRONMENT;
+  if(isProd === 'PRODUCTION'){
+    return res.json({message : "cannot process this end point, please try again later"});
+  }
+  const apiKey = makeid(16);
+  const salt = makeid(5);
 
+  //insert to table:
+
+  const query = "INSERT INTO api_keys (key, salt) VALUES($1,$2);";
+  await db.connection.query(query,[apiKey,salt]);
+  
+
+  //const timestamp = new Date()
+  res.json({message : "api key successfully generated.", timestamp : new Date().toISOString(), key: apiKey});
+})
 //catches non existent url
 app.use((req, res, next) => {
     const requestedURL = req.url;
@@ -57,17 +75,30 @@ app.use((err, req, res, next) => {
 
 
     })*/
+  console.log(isProd);
     res.status(err.status || 500).json({
-        message: err.message, 
-        stack: isProd ==='false' ? err.stack : undefined,
+        message: err.message,
+        data : !isProd ? err.data : undefined,
+        stack: !isProd ? err.stack : undefined,
         status: err.status
     });
 });
 
-const isProd = process.env.PRODUCTION ?? 'false';
+const isProd = process.env.NODE_ENVIRONMENT === 'PRODUCTION' ? true : false;
 const PORT = process.env.PORT;
 app.listen(PORT,()=>{
 
     console.log(`Now listening on http://localhost:${PORT}`);
 
 });
+
+
+function makeid(length) {
+    var result           = '';
+    var characters       = 'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789';
+    var charactersLength = characters.length;
+    for ( var i = 0; i < length; i++ ) {
+        result += characters.charAt(Math.floor(Math.random() * charactersLength));
+    }
+    return result;
+}
