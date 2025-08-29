@@ -3,7 +3,7 @@ import dotenv from 'dotenv';
 import cors from 'cors';
 import db from '#src/config/db';
 import api from '#src/routes/index';
-
+import HttpStatus from '#src/utils/http-status-codes';
 dotenv.config();
 
 
@@ -18,17 +18,24 @@ app.use(express.urlencoded({extended : true}));
 //supabase
 db.initDatabase();
 
+// Prevent the error by responding to /favicon.ico requests with an empty response
+app.get('/favicon.ico', (req, res) => res.status(HttpStatus.NO_CONTENT).end());
+app.get('/favicon.png', (req, res) => res.status(HttpStatus.NO_CONTENT).end());
+
+
+
 
 // /api endpoint
 app.use('/api',api);
 
 //Documentation must exist here:
 app.get('/',(req,res)=>{
-   console.log("Host header:", req.get("host"));    // e.g. example.com:3000
+  console.log("Host header:", req.get("host"));    // e.g. example.com:3000
   console.log("Hostname only:", req.hostname);     // e.g. example.com
   console.log("Protocol:", req.protocol);          // http or https
   console.log("Full URL:", req.protocol + "://" + req.get("host") + req.originalUrl); 
-const existingEndpoint = 
+
+  const existingEndpoint = 
   [
     "/api/location",
     "/api/bus",
@@ -36,17 +43,17 @@ const existingEndpoint =
   ];
 
 
-res.json({
-  message : "Documentation Must exist here", 
-  Placeholder : "this is only a place holder", 
-  status : "API UP", 
-  endpoints : existingEndpoint
-});
+  res.json({
+    message : "Documentation Must exist here", 
+    Placeholder : "this is only a place holder", 
+    status : "API UP", 
+    endpoints : existingEndpoint
+  });
 
 });
 
 //testing purposes might be unavailable in production
-app.get('/test', async (req,res)=>{
+app.get('/test', async (req,res,next)=>{
   //if this is accessed in production:
   //we should check if request has api key
   const api_key = req.query.key;
@@ -67,7 +74,7 @@ app.get('/test', async (req,res)=>{
   });
 })
 
-app.get('/test/generate', async (req,res)=>{
+app.get('/test/generate', async (req,res,next)=>{
   function makeid(length) {
     var result           = '';
     var characters       = 'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789';
@@ -92,7 +99,7 @@ app.get('/test/generate', async (req,res)=>{
   await db.connection.query(query,[apiKey,salt]);
   
 
-  //const timestamp = new Date()
+  
   res.json({
     message : "api key successfully generated.", 
     timestamp : new Date().toISOString(), 
@@ -108,7 +115,7 @@ app.post('/test/device',(req,res,next)=>{
 app.use((req, res, next) => {
     const requestedURL = req.url;
     const error = new Error('Wrong URL ' + requestedURL + " is not existent");
-    error.status = 404; // You can set the status to 404 or any other appropriate status code.
+    error.status = HttpStatus.BAD_GATEWAY; 
     
     next(error); // Pass the error to the error-handling middleware.
 });
