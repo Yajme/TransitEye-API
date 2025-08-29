@@ -81,7 +81,7 @@ app.get('/test/generate', async (req,res)=>{
   //check here if on PRODUCTION
   const isProd = process.env.NODE_ENVIRONMENT;
   if(isProd === 'PRODUCTION'){
-    next();
+    return next();
   }
   const apiKey = makeid(16);
   const salt = makeid(5);
