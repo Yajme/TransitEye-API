@@ -1,42 +1,60 @@
 import express from 'express';
-
-
-
+import db from '#src/config/db';
+import Bus from '#src/model/bus';
+import UserError  from '#src/module/userException';
+import HttpStatus from '#src/utils/http-status-codes';
 
 // /api/location
 const router = express.Router();
+
+
+
+//Documentation must exist here:
 router.get('/',(req,res,next)=>{
   res.json({message : "api endpoint for gps location"});
 })
+
+
+//Getting all the geolocation
+//filters must be applied
+//api key is mandatory
 router.get('/all',(req,res,next)=>{
-	res.send('all bus geolocation');
+	res.status(HttpStatus.NOT_IMPLEMENTED).send('all bus geolocation');
 });
-router.get('/:bus_id',(req,res,next)=>{
+//endpoint for retrieving geolocation
+router.get('/:bus_id',async (req,res,next)=>{
 
-    const bus_id = req.params.bus_id;
-	if(!bus_id) {
-		return res.status(404).json({message : "bus id is not found",status : 404});
-	}	
-	//check if the bus id is valid in database
-	if(!Number(bus_id)){
-		return res.status(501).json({message : "error", error : "bus id is not valid"});
+    try {
+		const bus_id = req.params.bus_id;
+		
+		//check if the bus id is valid 
+		if(!bus_id || !Number(bus_id)) {
+			throw new UserError('Invalid Bus ID,',HttpStatus.BAD_REQUEST,{bus_id:bus_id});
+		}	
+		//retrieve the latest gps coordinates in the database here:
+		const location = new Bus(bus_id,db.connection);
+		const current_location = await location.fetchCurrentStatus();
+		if(current_location.length < 1){
+			throw new UserError(`No record found for bus no: ${bus_id}`,HttpStatus.NOT_FOUND,{bus_id: bus_id});
+
+		}
+		const geolocation = {
+			latitude: current_location[0].latitude,
+			longtitude : current_location[0].longtitude
+		};
+
+
+
+		res.json({
+			timestamp : current_location[0].created_at,
+			coordinates : geolocation, 
+			status : 200, 
+			message : "geolocation retrieved",
+			bus_id: bus_id
+		});
+	} catch (error) {
+		next(error);
 	}
-	//retrieve the latest gps coordinates in the database here:
-	const example_location = {
-		latitude : 50.459445,
-		longtitude: 0.348753
-	}
-	const geolocation = example_location;
-
-
-
-	res.json({
-		timestamp : new Date(Date.now()).toISOString(),
-		coordinates : geolocation, 
-		status : 200, 
-		message : "geolocation retrieved",
-		bus_id: bus_id
-	});
 });
 
 
