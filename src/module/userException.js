@@ -12,4 +12,4 @@ class UserError extends Error{
 }
 
 
-export {UserError};
+export default UserError;

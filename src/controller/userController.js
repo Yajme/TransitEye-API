@@ -1,4 +1,4 @@
-import { UserError } from "#src/module/userException";
+import  UserError  from "#src/module/userException";
 import db from '#src/config/db';
 import { sha256 } from "js-sha256";
 import User from "#src/model/user";
