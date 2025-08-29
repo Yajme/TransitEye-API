@@ -1,4 +1,4 @@
-import { UserError } from "#src/module/userException";
+import  UserError  from "#src/module/userException";
 
 class User{
     constructor(username,password){
