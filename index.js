@@ -58,6 +58,8 @@ console.log(authHeader);
   console.log("Protocol:", req.protocol);          // http or https
   console.log("Full URL:", req.protocol + "://" + req.get("host") + req.originalUrl); 
 
+
+
   const existingEndpoint = 
   [
     "/api/location",
@@ -66,6 +68,7 @@ console.log(authHeader);
   ];
 
 
+ 
   res.json({
     message : "Documentation Must exist here", 
     Placeholder : "this is only a place holder", 
