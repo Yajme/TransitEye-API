@@ -5,11 +5,10 @@ import dotenv from 'dotenv';
 dotenv.config();
 const isProd = process.env.NODE_ENVIRONMENT === 'PRODUCTION' ? true : false;
 export const errorHandler = (err, req, res, next) => {  
-  
     logEvent({
             req : req,
             res : res,
-            status : err.status,
+            status : err.status || 500,
             message : err.message,
             stack : err.stack,
 
