@@ -1,8 +1,5 @@
 import express from 'express';
-import user from '#src/controller/userController';
-
-
-
+import user from '#src/controllers/userController';
 
 // /api/user
 
@@ -10,16 +7,10 @@ import user from '#src/controller/userController';
 const router = express.Router();
 
 
-router.get('/validate',user.apiKeyValidation,user.test);
+//router.get('/validate',user.test);
 router.post('/login',user.AuthenticateUser);
 
 
-
-
-
-
-
-
-
+//This route may not be used kekw
 
 export default router;
