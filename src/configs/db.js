@@ -6,7 +6,8 @@ dotenv.config();
 const connectionString = process.env.DB_CONNECTION_STRING;
 
 const connection = new pg.Client({
-  connectionString : connectionString
+  connectionString : connectionString,
+  ssl: { rejectUnauthorized: false }
 });
 
 function initDatabase(){
