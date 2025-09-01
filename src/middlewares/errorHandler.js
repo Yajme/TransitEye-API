@@ -1,5 +1,9 @@
 import logEvent from '#src/utils/logger';
 import HttpStatus from '#src/utils/http-status-codes';
+import dotenv from 'dotenv';
+
+dotenv.config();
+const isProd = process.env.NODE_ENVIRONMENT === 'PRODUCTION' ? true : false;
 export const errorHandler = (err, req, res, next) => {  
   
     logEvent({

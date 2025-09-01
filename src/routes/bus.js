@@ -1,7 +1,7 @@
 import express from 'express';
-import database from '#src/config/db';
-import Bus from '#src/model/bus';
-import UserError from '#src/module/userException';
+import database from '#src/configs/db';
+import Bus from '#src/models/bus';
+import UserError from '#src/utils/userException';
 import HttpStatus from '#src/utils/http-status-codes';
 
 const router = express.Router();
@@ -76,7 +76,6 @@ router.post('/',async (req,res,next)=>{
 router.get('/:bus_id', async (req,res,next)=>{
   try {
   const bus_id = Number(req.params.bus_id);
-  console.log(bus_id);
   if(!Number.isInteger(bus_id) || bus_id <= 0){
     throw new UserError('Bus ID must be a positive integer',HttpStatus.BAD_REQUEST);
   }
@@ -101,7 +100,7 @@ router.get('/:bus_id', async (req,res,next)=>{
 
 });
 
-
+//get an array of units with passenger count
 
 
 export default router;

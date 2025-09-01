@@ -1,7 +1,7 @@
 import express from 'express';
-import db from '#src/config/db';
-import Bus from '#src/model/bus';
-import UserError  from '#src/module/userException';
+import db from '#src/configs/db';
+import Bus from '#src/models/bus';
+import UserError  from '#src/utils/userException';
 import HttpStatus from '#src/utils/http-status-codes';
 
 // /api/location
@@ -16,14 +16,15 @@ router.get('/',(req,res,next)=>{
 
 
 //Getting all the geolocation
-//filters must be applied
-//api key is mandatory
+//filters can be applied
 router.get('/all',(req,res,next)=>{
 	res.status(HttpStatus.NOT_IMPLEMENTED).send('all bus geolocation');
 });
 //endpoint for retrieving geolocation
 router.get('/:bus_id',async (req,res,next)=>{
-
+//maybe i should also implement the use of api key here.
+  //but the checking of the api key should be a universal middleware
+  //not a function that is exclusive to this route 
     try {
 		const bus_id = req.params.bus_id;
 		
