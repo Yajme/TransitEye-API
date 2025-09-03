@@ -1,5 +1,5 @@
 export default class Bus {
-  constructor(bus_id, arg2, arg3, arg4) {
+  constructor(bus_id, arg2, arg3, arg4,arg5) {
     if (typeof arg2 === "object" && arg2 !== null) {
       // Case 1: new Bus(bus_id, connection)
       this.bus_id = bus_id;
@@ -7,12 +7,24 @@ export default class Bus {
     } else {
       // Case 2: new Bus(bus_id, geolocation, timestamp, passenger_count)
       this.bus_id = bus_id;
-      this.geolocation = arg2;
-      this.timestamp = arg3;
-      this.passenger_count = arg4;
+      this.latitude = arg2;
+      this.longtitude = arg3;
+      this.timestamp = arg4;
+      this.passenger_count = arg5;
     }
   }
-
+  async getAll(){
+    const query = 
+      "SELECT DISTINCT ON (bus_number) * FROM bus_status ORDER BY bus_number, created_at DESC;";
+    const response = await this.connection.query(query);
+    return response.rows;
+  }
+  async getAllLocations(){
+    const query = 
+      "SELECT DISTINCT ON (bus_number) id,created_at,bus_number,latitude,longtitude FROM bus_status ORDER BY bus_number, created_at DESC;";
+      const response = await this.connection.query(query);
+      return response.rows;  
+    }
   async fetchCurrentStatus() {
     const query =
       "SELECT * FROM bus_status WHERE bus_number = $1 ORDER BY created_at DESC LIMIT 1";
@@ -25,8 +37,8 @@ export default class Bus {
       "INSERT INTO bus_status (bus_number,latitude,longtitude,passenger_count) VALUES ($1,$2,$3,$4)";
     await connection.query(query, [
       this.bus_id,
-      this.geolocation.latitude,
-      this.geolocation.longtitude,
+      this.latitude,
+      this.longtitude,
       this.passenger_count,
     ]);
   }
