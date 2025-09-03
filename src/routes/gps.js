@@ -1,13 +1,9 @@
 import express from 'express';
-import db from '#src/configs/db';
-import Bus from '#src/models/bus';
-import UserError  from '#src/utils/userException';
-import HttpStatus from '#src/utils/http-status-codes';
+import location from '#src/controllers/locationController';
+
 
 // /api/location
 const router = express.Router();
-
-
 
 //Documentation must exist here:
 router.get('/',(req,res,next)=>{
@@ -17,46 +13,9 @@ router.get('/',(req,res,next)=>{
 
 //Getting all the geolocation
 //filters can be applied
-router.get('/all',(req,res,next)=>{
-	res.status(HttpStatus.NOT_IMPLEMENTED).send('all bus geolocation');
-});
+router.get('/all',location.getAllLocation);
 //endpoint for retrieving geolocation
-router.get('/:bus_id',async (req,res,next)=>{
-//maybe i should also implement the use of api key here.
-  //but the checking of the api key should be a universal middleware
-  //not a function that is exclusive to this route 
-    try {
-		const bus_id = req.params.bus_id;
-		
-		//check if the bus id is valid 
-		if(!bus_id || !Number(bus_id)) {
-			throw new UserError('Invalid Bus ID,',HttpStatus.BAD_REQUEST,{bus_id:bus_id});
-		}	
-		//retrieve the latest gps coordinates in the database here:
-		const location = new Bus(bus_id,db.connection);
-		const current_location = await location.fetchCurrentStatus();
-		if(current_location.length < 1){
-			throw new UserError(`No record found for bus no: ${bus_id}`,HttpStatus.NOT_FOUND,{bus_id: bus_id});
-
-		}
-		const geolocation = {
-			latitude: current_location[0].latitude,
-			longtitude : current_location[0].longtitude
-		};
-
-
-
-		res.json({
-			timestamp : current_location[0].created_at,
-			coordinates : geolocation, 
-			status : 200, 
-			message : "geolocation retrieved",
-			bus_id: bus_id
-		});
-	} catch (error) {
-		next(error);
-	}
-});
+router.get('/:bus_id',location.getLocation);
 
 
 

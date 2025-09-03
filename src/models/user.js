@@ -6,21 +6,10 @@ class User{
         this.password = password;
     }
 
-
-
-
-    validateUsername(){
-        return true;
-    }
-
-    validatePassword(){
-        return true;
-    }
-
-
     async fetchCredentials(connection){
-        const query = "SELECT password,salt FROM  users WHERE username = $1 AND deleted_at IS NULL";
+        const query = "SELECT id,password,salt FROM  users WHERE username = $1 AND deleted_at IS NULL";
         const response = await connection.query(query,[this.username]);
+        this.credentials = response.rows;
         return response.rows;
     }
 }
