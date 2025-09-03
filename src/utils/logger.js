@@ -4,9 +4,12 @@ import moment from 'moment-timezone';
 import dotenv from 'dotenv';
 dotenv.config();
 const env = process.env.NODE_ENVIRONMENT;
+//Log event should not be limited to errors
+// but to some logs as well such as info warning etc.
 const logEvent = async (fields)=>{
-
+  log(fields.message);
     const field = {
+    LogLevel : toLogLevel(fields.LogLevel??0),
     environment : env,
     requestId: fields.req.id || generateUUID(),
     client: {
@@ -74,4 +77,21 @@ const getCurrentDate = () =>{
   return dateInTimezone.toDate();
 
 }
+const toLogLevel = (value)=>{
+ return Object.values(LogLevel).find(level => level.value === value)?.label ?? "UNKNOWN";
+}
+export const LogLevel = Object.freeze({
+  TRACE: { code: 10, label: "TRACE" },
+  DEBUG: { code: 20, label: "DEBUG" },
+  INFO:  { code: 30, label: "INFO" },
+  WARN:  { code: 40, label: "WARN" },
+  ERROR: { code: 50, label: "ERROR" },
+  FATAL: { code: 60, label: "FATAL" }
+});
+
+export function log(message){
+const now = new Date().toISOString();
+console.log(`[${now}] ✅ ${message}`);
+}
+
 export default logEvent;

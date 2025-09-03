@@ -19,6 +19,7 @@ import HttpStatus from '#src/utils/http-status-codes';
 //middlewares
 import { apiKeyValidation } from '#src/middlewares/authMiddleware';
 import { errorHandler, notFoundHandler } from '#src/middlewares/errorHandler';
+import { log } from '#src/utils/logger';
 
 //app initialization
 dotenv.config();
@@ -27,7 +28,7 @@ const app = express();
 app.use(cors());
 app.use(express.json());
 app.use(express.urlencoded({extended : true}));
-
+ 
 
 //Connect the database(s) here
 
@@ -86,10 +87,7 @@ app.use(errorHandler);
 const PORT = process.env.PORT;
 app.listen(PORT, () => {
   
-  const now = new Date().toISOString();
-  console.log(
-    `[${now}] ✅ ${process.env.APP_NAME || "Express API"} listening on port ${PORT} (${process.env.NODE_ENVIRONMENT})`
-  );
+  log(`${process.env.APP_NAME || "Express API"} listening on port ${PORT} (${process.env.NODE_ENVIRONMENT})`);
 });
 
 
