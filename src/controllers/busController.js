@@ -50,13 +50,13 @@ const receiveLocation = async (req,res,next)=>{
   await bus_status.insertData(database.connection);
 
   res
-  .status(HttpStatus.CREATED)
-  .json(
+  .sendResponse(
     { 
-      message: "Bus status recorded successfully",
       bus_id: bus_id,
       timestamp: timestamp
-    }
+    },
+    "Bus status recorded successfully",
+    HttpStatus.CREATED
   );
   } catch (error) {
     next(error);
@@ -71,12 +71,10 @@ const getAllBus =  async (req,res,next)=>{
       throw new NotFoundError('No Records Found');
     }
     res
-    .status(HttpStatus.OK)
-    .json(
+    .sendResponse(
       {
-        message : "Buses successfully fetched",
         records :  buses
-      });
+      }, "Buses successfully fetched");
   } catch (error) {
     next(error);
   }
@@ -94,13 +92,11 @@ const getCurrentStatus = async (req,res,next)=>{
     throw new NotFoundError('no record found',{body : req.body});
   } 
   res
-  .status(HttpStatus.OK)
-  .json({
-    message : "Passenger count retrieved successfully",
+  .sendResponse({
     bus_id: bus_id,
     passenger_count : current_passenger[0].passenger_count,
     timestamp : new Date().toISOString()
-  });
+  },"Passenger count retrieved successfully");
 
   } catch (error) {
     next(error);
