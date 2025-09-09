@@ -4,11 +4,50 @@ import moment from 'moment-timezone';
 import dotenv from 'dotenv';
 dotenv.config();
 const env = process.env.NODE_ENVIRONMENT;
-//Log event should not be limited to errors
-// but to some logs as well such as info warning etc.
+export const EventType = {
+    INFO: 'info',
+    ERROR: 'error',
+    WARN: 'warn'
+};
+const logEvent = async({
+  type = EventType.INFO,
+  message,
+  data = null,
+  error = null
+}) =>{
+  // Basic log structure
+    const logEntry = {
+        type,
+        message,
+        timestamp: moment().tz("Asia/Manila").toDate(),
+        environment: env 
+    };
+
+    // Only add data if it exists
+    if (data) {
+        logEntry.data = data;
+    }
+
+    // Only add error info if it exists
+    if (error) {
+        logEntry.error = {
+            message: error.message,
+            stack: error.stack
+        };
+    }
+
+    // Console logging
+    console.log(`[${logEntry.timestamp.toISOString()}] ${type.toUpperCase()}: ${message}`);
+
+    // Save to Firebase
+    await firebase.setDocument('logs', logEntry);
+}
+/*
 const logEvent = async (fields)=>{
-  log(fields.message);
+    //Sends a log message to console.
+    log(fields.message);
     const field = {
+    eventType: fields.eventType || 'system', // e.g., 'login', 'retrieve', 'insert', 'modify', 'error'
     LogLevel : toLogLevel(fields.LogLevel??0),
     environment : env,
     requestId: fields.req.id || generateUUID(),
@@ -28,20 +67,30 @@ const logEvent = async (fields)=>{
     },
     response: {
       statusCode: fields.status,
+      success: fields.status >= 200 && fields.status < 300
     },
-        error : {
-            
-            message : fields.message,
-            stack : fields.stack
-        },
-        identifiers : {
-            ...fields.data
-        },
+    // Only include error field if there's an error
+    ...(fields.stack && {
+      error: {
         message: fields.message,
-        timestamp : getCurrentDate()
+        stack: fields.stack
+      }
+    }),
+    // Additional event-specific data
+    eventData: {
+      userId: fields.userId ?? null,
+      action: fields.action,
+      resourceType: fields.resourceType, // e.g., 'user', 'bus', 'location'
+      resourceId: fields.resourceId ?? null,
+      changes: fields.changes, // For modification events
+      ...fields.data
+    },
+    message: fields.message,
+    timestamp: getCurrentDate()
     }
     await firebase.setDocument('logs',field);
 }
+*/
 function generateUUID() {
   return 'xxxxxxxx-xxxx-4xxx-yxxx-xxxxxxxxxxxx'.replace(/[xy]/g, c => {
     const r = Math.random() * 16 | 0;
@@ -49,7 +98,7 @@ function generateUUID() {
     return v.toString(16);
   });
 }
-function sanitize(obj) {
+export function sanitize(obj) {
   if (!obj || typeof obj !== 'object') return obj;
 
   const sensitiveKeys = ['password', 'token', 'authorization', 'apiKey', 'secret'];
@@ -89,6 +138,7 @@ export const LogLevel = Object.freeze({
   FATAL: { code: 60, label: "FATAL" }
 });
 
+//this function should also accept error message and adjust the message in line in the error.
 export function log(message){
 const now = new Date().toISOString();
 console.log(`[${now}] ✅ ${message}`);

@@ -20,6 +20,8 @@ import HttpStatus from '#src/utils/http-status-codes';
 import { apiKeyValidation } from '#src/middlewares/authMiddleware';
 import { errorHandler, notFoundHandler } from '#src/middlewares/errorHandler';
 import { log } from '#src/utils/logger';
+import formatResponse from '#src/middlewares/formatResponse';
+import { loggerMiddleware, errorLoggerMiddleware } from '#src/middlewares/loggerMiddleware';
 
 //app initialization
 dotenv.config();
@@ -41,8 +43,8 @@ firebase.initializeFirebase();
 app.get('/favicon.ico', (req, res) => res.status(HttpStatus.NO_CONTENT).end());
 app.get('/favicon.png', (req, res) => res.status(HttpStatus.NO_CONTENT).end());
 
-
-
+app.use(loggerMiddleware);
+app.use(formatResponse);
 
 // /api endpoint
 app.use('/api',apiKeyValidation,api);
