@@ -15,7 +15,7 @@ import test from '#src/routes/test';
 
 // utils
 import HttpStatus from '#src/utils/http-status-codes';
-
+import mqttClient from '#src/utils/mqtt';
 //middlewares
 import { apiKeyValidation } from '#src/middlewares/authMiddleware';
 import { errorHandler, notFoundHandler } from '#src/middlewares/errorHandler';
@@ -52,8 +52,27 @@ app.use('/api',apiKeyValidation,api);
 // /test endpoint
 app.use('/test',test)
 
+
+
+// Initialize MQTT after database connections
+mqttClient.setupMQTTSubscriptions();
+
+
 //Documentation must exist here:
-app.get('/',(req,res)=>{
+app.get('/',async (req,res)=>{
+   // Example message
+        const message = {
+            deviceId: "bus_123",
+            location: {
+                latitude: 14.5995,
+                longitude: 120.9842
+            },
+            timestamp: new Date().toISOString()
+        };
+          // Publish to a topic
+        await mqttClient.publish('test/bus/location', message);
+        
+        console.log('Message published successfully');
 const authHeader = req.headers["authorization"];
 console.log(authHeader);
   console.log("Host header:", req.get("host"));    // e.g. example.com:3000
