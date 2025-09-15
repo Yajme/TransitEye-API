@@ -60,19 +60,6 @@ mqttClient.setupMQTTSubscriptions();
 
 //Documentation must exist here:
 app.get('/',async (req,res)=>{
-   // Example message
-        const message = {
-            deviceId: "bus_123",
-            location: {
-                latitude: 14.5995,
-                longitude: 120.9842
-            },
-            timestamp: new Date().toISOString()
-        };
-          // Publish to a topic
-        await mqttClient.publish('test/bus/location', message);
-        
-        console.log('Message published successfully');
 const authHeader = req.headers["authorization"];
 console.log(authHeader);
   console.log("Host header:", req.get("host"));    // e.g. example.com:3000
