@@ -87,6 +87,31 @@ console.log(authHeader);
 
 });
 
+//Handle cron job 
+//
+app.get('/activate',(req,res,next)=>{
+  try {
+    const password = process.env.CRON_JOB_PASSWORD;
+    const key = req.query.key;
+    
+
+    if(!password){
+      throw new Error('Internal Server Error');
+    }
+
+
+    if (password !=== key){
+      throw new Error('Internal Server Error');
+    }
+
+
+    res.json({message : "OK"});
+  } catch (error ) {
+    throw error;
+  }
+})
+
+
 //catches non-existing urls
 app.use(notFoundHandler);
 //handles error
