@@ -100,7 +100,7 @@ app.get('/activate',(req,res,next)=>{
     }
 
 
-    if (password !=== key){
+    if (password !== key){
       throw new Error('Internal Server Error');
     }
 
