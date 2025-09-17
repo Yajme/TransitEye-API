@@ -7,10 +7,12 @@ import wss from '#src/utils/websocket';
 // Topic handlers
 export const handleBusLocation = async (message) => {
     try {
+        message.timestamp = getCurrentDate().toISOString();
         console.log('[MQTT] Received bus location:', message);
         // Handle bus location updates
             //Transmit to websocket
             console.log('[WebSockets]: sending to clients...');
+            
             wss.clients.forEach((client)=>{
                 
                 client.send(JSON.stringify(message));
