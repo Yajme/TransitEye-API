@@ -4,7 +4,7 @@
 import express from 'express';
 import dotenv from 'dotenv';
 import cors from 'cors';
-
+import ws from 'ws';
 //configs
 import firebase from '#src/configs/firebase';
 import db from '#src/configs/db';
@@ -16,6 +16,7 @@ import test from '#src/routes/test';
 // utils
 import HttpStatus from '#src/utils/http-status-codes';
 import mqttClient from '#src/utils/mqtt';
+import websocket from '#src/utils/websocket';
 //middlewares
 import { apiKeyValidation } from '#src/middlewares/authMiddleware';
 import { errorHandler, notFoundHandler } from '#src/middlewares/errorHandler';
@@ -30,7 +31,7 @@ const app = express();
 app.use(cors());
 app.use(express.json());
 app.use(express.urlencoded({extended : true}));
- 
+
 
 //Connect the database(s) here
 
@@ -93,10 +94,15 @@ app.use(notFoundHandler);
 app.use(errorHandler);
 
 const PORT = process.env.PORT;
-app.listen(PORT, () => {
+const server = app.listen(PORT, () => {
   
   log(`${process.env.APP_NAME || "Express API"} listening on port ${PORT} (${process.env.NODE_ENVIRONMENT})`);
 });
 
 
 
+server.on('upgrade',(req,socket,head)=>{
+  websocket.handleUpgrade(req,socket,head, (ws)=>{
+    websocket.emit('connection',ws,req);
+  })
+})
