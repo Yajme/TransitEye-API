@@ -1,14 +1,21 @@
 import mqttClient from '#src/configs/mqtt';
-
-
+import Bus from '#src/models/bus';
+import db from '#src/configs/db';
+import { getCurrentDate } from '#src/utils/date';
+import { log } from '#src/utils/logger';
+import wss from '#src/utils/websocket';
 // Topic handlers
 export const handleBusLocation = async (message) => {
     try {
-        console.log('Received bus location:', message);
+        console.log('[MQTT] Received bus location:', message);
         // Handle bus location updates
-        //insert to location
-
-        // e.g., update database, notify clients, etc.
+            //Transmit to websocket
+            console.log('[WebSockets]: sending to clients...');
+            wss.clients.forEach((client)=>{
+                
+                client.send(JSON.stringify(message));
+            })
+        
     } catch (error) {
         console.error('Error handling bus location:', error);
     }
@@ -16,9 +23,16 @@ export const handleBusLocation = async (message) => {
 
 export const handleBusStatus = async (message) => {
     try {
-        console.log('Received bus status:', message);
+        console.log('[MQTT] Received bus status:', message);
         //Insert bus status
-
+           const bus_id = message.bus_id ;
+           const latitude = message.lat || message.latitude;
+           const longitude = message.lon || message.longitude;
+           const timestamp = getCurrentDate().toISOString();
+           const bus = new Bus(bus_id,latitude,longitude,timestamp,passenger_count);
+           const passenger_count = message.passenger_count || 0;
+            await bus.insertData(db.connection);
+              log('[MQTT]: Bus status updated!');
         // Handle bus status updates
     } catch (error) {
         console.error('Error handling bus status:', error);
