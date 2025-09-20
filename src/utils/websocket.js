@@ -12,7 +12,7 @@ wss.on("connection", (ws) => {
   console.log("[WebSocket] New WebSocket client connected");
 
   ws.on("message", (msg) => {
-    console.log("[WebSocket] Message from client:", msg);
+    console.log("[WebSocket] Message from client:", msg.toString());
   });
 
   ws.on("close", () => {

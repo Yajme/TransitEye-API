@@ -6,7 +6,7 @@ dotenv.config();
 // MQTT Configuration
 const MQTT_BROKER_URL = process.env.MQTT_BROKER || 'mqtt://localhost:1883';
 const MQTT_OPTIONS = {
-    protocol : 'mqtts',
+    protocol : process.env.MQTT_PROTOCOL || 'mqtt',
     clientId: `transitEye_${Math.random().toString(16).slice(3)}`,
     clean: true,
     connectTimeout: 4000,
