@@ -27,8 +27,8 @@ jobs:
             fi
             cd ~/apps/TransitEye-API
             git pull origin main
-            ${{ secrets.NPM }} install --production
-            ${{ secrets.PM2 }} stop myapp || true
-            ${{ secrets.PM2 }} start npm --name myapp -- run start
-            ${{ secrets.PM2 }} save
+            /usr/bin/npm install --production
+            /usr/local/bin/pm2 stop myapp || true
+            /usr/local/bin/pm2 start npm --name myapp -- run start
+            /usr/local/bin/pm2 save
           "
