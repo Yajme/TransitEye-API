@@ -22,7 +22,7 @@ jobs:
       - name: Deploy to VM
         run: |
           ssh ${{ secrets.VM_USER }}@${{ secrets.VM_HOST }} "
-            if [ ! -d ~/apps/myapp ]; then
+            if [ ! -d ~/apps/TransitEye-API ]; then
               git clone https://github.com/Yajme/TransitEye-API.git ~/apps/TransitEye-API
             fi
             cd ~/apps/TransitEye-API
