@@ -30,7 +30,7 @@ jobs:
             cd ~/apps/TransitEye-API
             git pull origin main
             npm install --production
-            pm2 stop TransitEye || true
+            pm2 stop TransitEye-API || true
             pm2 start index.js --name TransitEye-API
             pm2 save
           "
