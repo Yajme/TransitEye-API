@@ -22,13 +22,15 @@ jobs:
       - name: Deploy to VM
         run: |
           ssh ${{ secrets.VM_USER }}@${{ secrets.VM_HOST }} "
+            export NVM_DIR=\$HOME/.nvm
+            [ -s \"\$NVM_DIR/nvm.sh\" ] && \. \"\$NVM_DIR/nvm.sh\"
             if [ ! -d ~/apps/TransitEye-API ]; then
               git clone https://github.com/Yajme/TransitEye-API.git ~/apps/TransitEye-API
             fi
             cd ~/apps/TransitEye-API
             git pull origin main
-            ${{ secrets.NPM }} install --production
-            ${{ secrets.PM2 }} stop TransitEye || true
-            ${{ secrets.PM2 }} pm2 start index.js --name TransitEye-API
-            ${{ secrets.PM2 }} save
+            npm install --production
+            pm2 stop TransitEye || true
+            pm2 start index.js --name TransitEye-API
+            pm2 save
           "
