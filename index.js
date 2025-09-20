@@ -119,7 +119,7 @@ app.use(notFoundHandler);
 app.use(errorHandler);
 
 const PORT = process.env.PORT;
-const server = app.listen(PORT, () => {
+const server = app.listen(PORT,"0.0.0.0", () => {
   
   log(`${process.env.APP_NAME || "Express API"} listening on port ${PORT} (${process.env.NODE_ENVIRONMENT})`);
 });
