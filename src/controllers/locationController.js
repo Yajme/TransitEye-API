@@ -48,18 +48,15 @@ const getLocation = async (req,res,next)=>{
 		}
 		const geolocation = {
 			latitude: current_location[0].latitude,
-			longtitude : current_location[0].longtitude
+			longitude : current_location[0].longitude
 		};
 
-
-
-		res.json({
+		res.sendResponse({
 			timestamp : current_location[0].created_at,
-			coordinates : geolocation, 
-			status : 200, 
-			message : "geolocation retrieved",
-			bus_id: bus_id
-		});
+			coordinates : geolocation,
+			bus_id: bus_id 
+		},"geolocation retrieved");
+		
 	} catch (error) {
 		next(error);
 	}
