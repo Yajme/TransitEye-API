@@ -31,9 +31,14 @@ export const handleBusStatus = async (message) => {
            const latitude = message.lat || message.latitude;
            const longitude = message.lon || message.longitude;
            const timestamp = getCurrentDate().toISOString();
-           const bus = new Bus(bus_id,latitude,longitude,timestamp,passenger_count);
+           //insert to passenger event
+           const passenger_in = message.passenger_in || 0;
+           const passenger_out = message.passenger_out || 0;
            const passenger_count = message.passenger_count || 0;
-            await bus.insertData(db.connection);
+           const bus = new Bus(bus_id,latitude,longitude,timestamp,passenger_count);
+          
+        
+          await bus.insertData(db.connection);
               log('[MQTT]: Bus status updated!');
         // Handle bus status updates
     } catch (error) {
