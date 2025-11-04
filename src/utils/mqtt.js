@@ -34,12 +34,14 @@ export const handleBusStatus = async (message) => {
            //insert to passenger event
            const passenger_in = message.passenger_in || 0;
            const passenger_out = message.passenger_out || 0;
+
            const passenger_count = message.passenger_count || 0;
            const bus = new Bus(bus_id,latitude,longitude,timestamp,passenger_count);
           
         
           await bus.insertData(db.connection);
-              log('[MQTT]: Bus status updated!');
+          await bus.insertPassengerEvent(passenger_in,passenger_out,db.connection);
+          log('[MQTT]: Bus status updated!');
         // Handle bus status updates
     } catch (error) {
         console.error('Error handling bus status:', error);

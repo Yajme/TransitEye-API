@@ -13,6 +13,17 @@ export default class Bus {
       this.passenger_count = arg5;
     }
   }
+  async insertPassengerEvent(passenger_in  = 0, passenger_out = 0,connection){
+
+    const query = "INSERT INTO passenger_events (latitude,longitude,passenger_in,passenger_out,bus_id) VALUES($1,$2,$3,$4,$5);";
+    await connection.query(query,[
+      this.latitude,
+      this.longitude,
+      passenger_in,
+      passenger_out,
+      this.bus_id
+    ]);
+  }
   async getAll(){
     const query = 
       "SELECT DISTINCT ON (bus_number) * FROM bus_status ORDER BY bus_number, created_at DESC;";
