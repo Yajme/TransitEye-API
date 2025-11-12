@@ -7,8 +7,9 @@ import wss from '#src/utils/websocket';
 // Topic handlers
 export const handleBusLocation = async (message) => {
     try {
-        message.timestamp = getCurrentDate().toISOString();
         console.log('[MQTT] Received bus location:', message);
+        message.timestamp = getCurrentDate().toISOString();
+        
         // Handle bus location updates
             //Transmit to websocket
             console.log('[WebSockets]: sending to clients...');
@@ -54,8 +55,19 @@ export const setupMQTTSubscriptions = async () => {
         await mqttClient.connect();
 
         // Subscribe to topics
-        mqttClient.subscribe('bus/location', handleBusLocation);
-        mqttClient.subscribe('bus/status', handleBusStatus);
+        mqttClient.subscribe('bus/+/location', handleBusLocation);
+        mqttClient.subscribe('bus/+/status', handleBusStatus);
+        mqttClient.on('message', (topic, message) => {
+            const msg = JSON.parse(message.toString());
+
+            if (topic.match(/^bus\/[^/]+\/location$/)) {
+                handleBusLocation(msg);
+            } else if (topic.match(/^bus\/[^/]+\/status$/)) {
+                handleBusStatus(msg);
+            } else {
+                console.log('Unhandled topic:', topic);
+            }
+        });
 
         console.log('MQTT subscriptions setup complete');
     } catch (error) {

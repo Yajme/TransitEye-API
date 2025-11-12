@@ -104,7 +104,9 @@ class MQTTClient {
             }
         });
     }
-
+    on(message, callback){
+        this.client.on(message,callback);
+    }
     disconnect() {
         if (this.client) {
             this.client.end();
