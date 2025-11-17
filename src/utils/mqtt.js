@@ -12,7 +12,8 @@ export const handleBusLocation = async (message) => {
         message.timestamp = getCurrentDate().toISOString();
          if(!message.passenger_count){
             message.passenger_count = current_passenger_count;
-        }else{
+        }
+        if(message.passenger_count > 0){
             current_passenger_count = message.passenger_count;
         }
         // Handle bus location updates
