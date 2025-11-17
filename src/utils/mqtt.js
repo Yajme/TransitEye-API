@@ -5,11 +5,16 @@ import { getCurrentDate } from '#src/utils/date';
 import { log } from '#src/utils/logger';
 import wss from '#src/utils/websocket';
 // Topic handlers
+const current_passenger_count = 0;
 export const handleBusLocation = async (message) => {
     try {
         console.log('[MQTT] Received bus location:', message);
         message.timestamp = getCurrentDate().toISOString();
-        
+         if(!message.current_passenger){
+            message.current_passenger = current_passenger_count;
+        }else{
+            current_passenger_count = message.current_passenger;
+        }
         // Handle bus location updates
             //Transmit to websocket
             console.log('[WebSockets]: sending to clients...');
